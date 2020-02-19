@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from "react";
+﻿import React, {useState,useEffect} from "react";
 import {View, Text, StyleSheet} from "react-native";
 import {Avatar} from "react-native-elements";
 import * as firebase from "firebase";
@@ -54,11 +54,9 @@ export default function InfoUser(props){
        .ref("avatar/${uid}")
        .getDownloadURL()
        .then(async result =>{
-           console.log("entro en el then "+uid);
         const update ={
             photoUrl: result
         }
-        console.log(result);
         await firebase.auth().currentUser.updateProfile(update);
        }).catch(()=>{
            console.log("Error al optener el avatar");

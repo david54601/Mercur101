@@ -28,6 +28,7 @@ export default function InfoUser(props){
         }else{
             uploadImage(result.uri, uid).then(()=>{
                 console.log("imagen cargada satisfactoriamente");
+                console.log("el uid es "+uid);
                 updatePhotoUrl(uid);
             })
         }
@@ -39,11 +40,13 @@ export default function InfoUser(props){
    const uploadImage= async(uri, nameImage)=>{
        const response =await fetch(uri);
        const blob = await response.blob();
+       console.log(" URI"+uri);
+       console.log(" nameImage es : "+nameImage)
        
        const ref = firebase
        .storage()
        .ref()
-       .child("avatar/${nameImage}");
+       .child('avatar/${nameImage}');
        return ref.put(blob);
 
    };
@@ -51,15 +54,17 @@ export default function InfoUser(props){
    const updatePhotoUrl = uid =>{
     firebase
        .storage()
-       .ref("avatar/${uid}")
+       .ref(`avatar/${uid}`)
        .getDownloadURL()
        .then(async result =>{
         const update ={
             photoUrl: result
         }
+        console.log("el Resultado es: "+result);
+        console.log("el update es: "+update);
         await firebase.auth().currentUser.updateProfile(update);
        }).catch(()=>{
-           console.log("Error al optener el avatar");
+           console.log('Error al obtener el avatar');
        })
 
    }

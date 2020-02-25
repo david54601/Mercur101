@@ -1,4 +1,4 @@
-﻿import React, {useState,useEffect} from "react";
+﻿import React from "react";
 import {View, Text, StyleSheet} from "react-native";
 import {Avatar} from "react-native-elements";
 import * as firebase from "firebase";
@@ -7,46 +7,44 @@ import * as imagePicker from"expo-image-picker";
 
 
 export default function InfoUser(props){
-    const {userInfo:{uid,displayName,email,photoUrl}
+    const {
+    userInfo:{uid,displayName,email,photoURL},
+    setReloadData,
+    toastRef,
+    setIsLoading,
+    setTextLoading
     }=props;
-       
+   console.log(props);
+
    const changeAvatar= async()=>{
-      
     const resultPermission=  await permissions.askAsync(permissions.CAMERA_ROLL);
     const resultPermissionCamera=resultPermission.permissions.cameraRoll.status;    
-   
-    if(resultPermissionCamera==="denied"){
-        console.log("se necesitan aceptar los permisos de la galeria ");
+       if(resultPermissionCamera==="denied"){
+        toastRef.current.show("se necesitan aceptar los permisos de la galeria ");
     } else {
         const result= await  imagePicker.launchImageLibraryAsync({
             allowsEditing:true,
             aspect:[4,3]
         })
-
         if(result.cancelled){
-            console.log("cerro la galeria de imagenes");
+            toastRef.current.show("cerro la galeria de imagenes sin seleccionar ninguna imagen");
         }else{
             uploadImage(result.uri, uid).then(()=>{
-                console.log("imagen cargada satisfactoriamente");
-                console.log("el uid es "+uid);
                 updatePhotoUrl(uid);
             })
         }
-
     }
     
    }
-   
    const uploadImage= async(uri, nameImage)=>{
+        setTextLoading=("actualizando avatar");
+       setIsLoading(true);
        const response =await fetch(uri);
-       const blob = await response.blob();
-       console.log(" URI"+uri);
-       console.log(" nameImage es : "+nameImage)
-       
+       const blob = await response.blob();  
        const ref = firebase
        .storage()
        .ref()
-       .child('avatar/${nameImage}');
+       .child(`avatar/${nameImage}`);
        return ref.put(blob);
 
    };
@@ -58,13 +56,13 @@ export default function InfoUser(props){
        .getDownloadURL()
        .then(async result =>{
         const update ={
-            photoUrl: result
+            photoURL:result
         }
-        console.log("el Resultado es: "+result);
-        console.log("el update es: "+update);
         await firebase.auth().currentUser.updateProfile(update);
+        setReloadData(true);
+        setIsLoading(false);
        }).catch(()=>{
-           console.log('Error al obtener el avatar');
+        toastRef.current.show('Error al obtener la foto de perfil');
        })
 
    }
@@ -78,8 +76,8 @@ export default function InfoUser(props){
     onEditPress={changeAvatar}
     containerStyle={styles.userInfoAvatar}
     source={{
-        uri:photoUrl
-         ? photoUrl
+        uri:photoURL
+         ? photoURL
         : "https://api.adorable.io/avatars/130/abott@adorable.png"
 
     }}

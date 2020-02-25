@@ -26,8 +26,11 @@
     "ios": {
       "supportsTablet": true
     },
-    "android":{
-      "permissions":["CAMERA_ROLL"]
-    }
+    "android": {
+      "permissions": [
+        "CAMERA_ROLL"
+      ]
+    },
+    "description": ""
   }
 }

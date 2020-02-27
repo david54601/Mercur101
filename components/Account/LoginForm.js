@@ -74,7 +74,7 @@ import Loading from "../../components/Loading";
             <Icon
             type="material-community"
             name={hidePassword ? "eye-outline":"eye-off-outline"}
-            iconStyle={styles.rightIcon}
+            iconStyle={styles.iconRight}
             onPress={()=>setHidePassword(!hidePassword)}
             />
 

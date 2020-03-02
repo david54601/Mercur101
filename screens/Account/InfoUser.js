@@ -6,6 +6,7 @@ import * as permissions from "expo-permissions";
 import * as imagePicker from"expo-image-picker";
 
 
+
 export default function InfoUser(props){
     const {
     userInfo:{uid,displayName,email,photoURL},
@@ -14,7 +15,6 @@ export default function InfoUser(props){
     setIsLoading,
     setTextLoading
     }=props;
-   console.log(props);
 
    const changeAvatar= async()=>{
     const resultPermission=  await permissions.askAsync(permissions.CAMERA_ROLL);
@@ -37,7 +37,7 @@ export default function InfoUser(props){
     
    }
    const uploadImage= async(uri, nameImage)=>{
-        setTextLoading=("actualizando avatar");
+    setTextLoading("actualizando avatar");
        setIsLoading(true);
        const response =await fetch(uri);
        const blob = await response.blob();  

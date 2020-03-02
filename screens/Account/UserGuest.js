@@ -15,7 +15,7 @@ import {withNavigation} from "react-navigation";
         resizeMode="contain"
         />
         <Text style={styles.title}>
-            Mercurio 
+            Unless 
        </Text>
 
         <Text style ={styles.description}>

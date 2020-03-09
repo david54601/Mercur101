@@ -14,18 +14,23 @@ import Loading from "../../components/Loading";
     const[email, setEmail]=useState("");
     const [password, setPassword]=useState("");
     const [isVisibleLoading, setIsVisibleLoading]=useState(false);
+ 
 
 
     const Login= async (props)=>{
-    setIsVisibleLoading(true);
+      
+        
+    
+    
+        setIsVisibleLoading(true);
+
             if(!email || !password){
             toastRef.current.show("Los campos no pueden ir vacios ");
+           
         } else{
-
             if(!validateEmail(email)){
                 toastRef.current.show("Email no valido");
             } else{
-                //TO DO: falta logica para ingreso
                 await firebase
                 .auth()
                 .signInWithEmailAndPassword(email,password)
@@ -37,10 +42,7 @@ import Loading from "../../components/Loading";
                     toastRef.current.show("Email o contraseña incorrecta ");
                 })
 
-
             }
-
-
 
         }
         setIsVisibleLoading(false);
@@ -49,7 +51,6 @@ import Loading from "../../components/Loading";
     return(
         <View style={styles.formContainer}>
             <Input
-        
         placeholder="Correo electronico"
         containerStyle={styles.inputForm}
         onChange={event=>setEmail(event.nativeEvent.text)}

@@ -1,5 +1,6 @@
  import {createStackNavigator} from "react-navigation-stack";
 import BusinessScreen from "../screens/Business";
+import AddBusinessScren from "../screens/Business/AddBusiness"
 
 
 export const BusinessScreenStacks= createStackNavigator({
@@ -9,6 +10,12 @@ Businees:{
         title:"Negocios"
     })
     
+    },
+    AddBusiness:{
+        screen:AddBusinessScren,
+        navigationOptions:()=>({
+            title: "Nuevo Negocio"
+        })
     }
 
 })

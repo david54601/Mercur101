@@ -17,10 +17,13 @@ import { withNavigation}from "react-navigation";
     const [email, setEmail] =useState("");
     const [password, setPassword]=useState("");
     const [repeatPassword, setRepeatPassword]=useState("");
+  
 
     const Register= async()=>{
         setIsVisibleLoading(true);
     
+        
+       
         if (!email || !password|| !repeatPassword){
            
             toastRef.current.show("todos los campos son obligatorios");
@@ -30,25 +33,38 @@ import { withNavigation}from "react-navigation";
                 toastRef.current.show("Email No valido ");
 
             }else{
-                
-                if(password !=repeatPassword){
-            
-                toastRef.current.show("Las contraseñas deben ser iguales");
-                }
-                else{
 
-                  await firebase
-                  .auth()
-                  .createUserWithEmailAndPassword(email,password)
-                  .then(()=>{
-                    navigation.navigate("MyAccount");
+                if(password.length<8|| repeatPassword.length<8){
                     
-                  })
-                  .catch(()=>{
-                    toastRef.current.show("Ocurrio un error esperado al realizar el registro de usuario");
-                  })
-                
+                    toastRef.current.show("Las contraseñas deben tener mas de 8 caracteres");
+
+                }else{
+
+
+                    if(password !=repeatPassword){
+            
+                        toastRef.current.show("Las contraseñas deben ser iguales");
+                        }
+                        else{
+        
+                          await firebase
+                          .auth()
+                          .createUserWithEmailAndPassword(email,password)
+                          .then(()=>{
+                            navigation.navigate("MyAccount");
+                            
+                          })
+                          .catch(()=>{
+                            toastRef.current.show("Ocurrio un error esperado al realizar el registro de usuario");
+                          })
+                        
+                        }
+
+
+
                 }
+                            
+                
 
             }
          
@@ -58,16 +74,11 @@ import { withNavigation}from "react-navigation";
     };
 
     return(
+             
         
-
-     
-        <View style={styles.formContainer} behavior="enabled"> 
-  
-
-
-
-
-    <Input 
+    <View style={styles.formContainer} behavior="enabled"> 
+   
+      <Input 
     placeholder="correo Electronico"
     containerStyle={styles.inputForm}
     onChange={e=>setEmail(e.nativeEvent.text)}
@@ -118,9 +129,11 @@ import { withNavigation}from "react-navigation";
     />
 
         <Loading text="Creando cuenta" isVisible={isVisibleLoading}/>
+      
         </View>
         
-    
+       
+   
         
     )}
     

@@ -7,27 +7,26 @@ import * as ImagePicker from "expo-image-picker";
 const WidthScreen=Dimensions.get("window").width;
 const WidthMiniature =(WidthScreen/5)-15;
 
-export default function AddProductForm(props){
+export default function AddBusinessForm(props){
     const{toastRef,setIsLoading,navigation}=props;
     const[imagesSelected, setImagesSelected]=useState([]);
-    const[productName ,setproductName]=useState("");
-    const[productQuantity,setProductQuantity]=useState("");
-    const[productPrice,setProductPrice]=useState("");
-    const[productDescription,setProductDescription]=useState("");
+    const[businessName ,setBusinessName]=useState("");
+    const[businesstQuantity,setBusinessQuantity]=useState("");
+    const[businessPrice,setBusinessPrice]=useState("");
+    const[businessDescription,setBusinessDescription]=useState("");
 
-   const addProduct =()=>{
+   const addBusiness =()=>{
 
-    if(!productName || !productQuantity || !productPrice || !productDescription){
+    if(!businessName || !businesstQuantity || !businessPrice || !businessDescription){
         toastRef.current.show("Todos los campos del formulario son obligatorios");3000
     }else if (imagesSelected.length===0){
-        toastRef.current.show("El producto tiene que contar por lo menos con una foto");3000  
+        toastRef.current.show("El negocio tiene que contar por lo menos con una foto");3000  
     
     }else{
 
         setIsLoading(true);
         console-console.log("soy tu papi XD");
         
-
     }
 
     
@@ -35,12 +34,12 @@ export default function AddProductForm(props){
 
 return(
     <ScrollView>
-        <ImageProduct imageProduct={imagesSelected[0]}/>
+        <ImageBusiness imageBusiness={imagesSelected[0]}/>
         <FormAdd
-         setproductName={setproductName}
-         setProductQuantity={setProductQuantity}
-         setProductPrice={setProductPrice}
-         setProductDescription={setProductDescription}
+         setBusinessName={setBusinessName}
+         setBusinessQuantity={setBusinessQuantity}
+         setBusinessPrice={setBusinessPrice}
+         setBusinessDescription={setBusinessDescription}
         />
         <UploadImage
         imagesSelected={imagesSelected}
@@ -48,24 +47,24 @@ return(
         toastRef={toastRef} 
         />
         <Button
-        title="Crear un nuevo producto"
-        onPress={addProduct}
-        buttonStyle={styles.btnProduct}
+        title="Crear un nuevo Negocio"
+        onPress={addBusiness}
+        buttonStyle={styles.btnBusiness}
         />
 
    
     </ScrollView>)
 }
 
-function ImageProduct(props){
+function ImageBusiness(props){
 
-    const{imageProduct}=props;
-
+    const{imageBusiness}=props;
+ 
     return(
         <View style={styles.viewPhoto}>
-            {imageProduct?(
+            {imageBusiness?(
                 <Image
-                source={{uri:imageProduct}}
+                source={{uri:imageBusiness}}
                 style={{width:WidthScreen, height:200}}
 
                 />
@@ -145,15 +144,15 @@ function UploadImage(props){
 
             )}
 
-        {imagesSelected.map(imageProduct=>(
+        {imagesSelected.map(imageBusiness=>(
 
 
             <Avatar
-            key={imageProduct}
-            onPress={()=>removeImage(imageProduct)}
+            key={imageBusiness}
+            onPress={()=>removeImage(imageBusiness)}
             style={styles.miniatureStyles}
             source={{
-                uri:imageProduct }}            
+                uri:imageBusiness }}            
             />
         ))}
         </View>
@@ -162,47 +161,47 @@ function UploadImage(props){
 
 
 function FormAdd(props){
-    const{setproductName,setProductQuantity,setProductPrice,setProductDescription}=props;
+    const{setBusinessName,setBusinessQuantity,setBusinessPrice,setBusinessDescription}=props;
 
     return(
         <View style={styles.viewForm}>
             <Input
             
-            placeholder="Nombre producto"
+            placeholder="Nombre Negocio"
             containerStyle={styles.input}
-            onChange={e=>setproductName(e.nativeEvent.text)}
+            onChange={e=>setBusinessName(e.nativeEvent.text)}
             
             />
          
             <Input
                 keyboardType="numeric"
-                placeholder="Cantidad"
-                containerStyle={styles.inputNumeros}
-                onChange={e=>setProductQuantity(e.nativeEvent.text)}
+                placeholder="Ubicación"
+                containerStyle={styles.input}
+                onChange={e=>setBusinessQuantity(e.nativeEvent.text)}
                 rightIcon={{
                     type:"material-community",
                     name:"numeric",
                     color:"#c2c2c2"
                 }}
-                
+               
                 
             />
              <Input
              keyboardType=""
-                placeholder="Precio"
-                containerStyle={styles.inputNumeros}
-                onChange={e=>setProductPrice(e.nativeEvent.text)}
+                placeholder="Telefono"
+                containerStyle={styles.input}
+                onChange={e=>setBusinessPrice(e.nativeEvent.text)}
                 rightIcon={{
                     type:"material-community",
-                    name:"currency-usd",
+                    name:"phone",
                     color:"#c2c2c2"
                 }}
             />
                <Input
-                placeholder="Descripcion producto"
+                placeholder="Descripcion Negocio"
                 multiline={true}
                 containerStyle={styles.textArea}
-                onChange={e=>setProductDescription(e.nativeEvent.text)}
+                onChange={e=>setBusinessDescription(e.nativeEvent.text)}
             />
 
 
@@ -213,7 +212,7 @@ function FormAdd(props){
 
 const styles=StyleSheet.create({
 
-    btnProduct:{
+    btnBusiness:{
         backgroundColor:"#8F2764",
         margin:20
     },

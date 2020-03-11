@@ -5,7 +5,7 @@ import * as firebase from "firebase";
 import * as Facebook from 'expo-facebook';
 import {FacebookApi} from "../../utils/Social";
 import Loading from "../Loading";
-import Toast from "react-native-easy-toast";
+
 
 export default function LoginFacebook(props){
 

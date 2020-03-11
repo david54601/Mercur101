@@ -18,11 +18,13 @@ import Loading from "../../components/Loading";
 
 
     const Login= async (props)=>{
-      
-        
-    
-    
         setIsVisibleLoading(true);
+
+        console.log(email);
+        console.log(email.trim());
+
+        const emailSinEspacio=email.trim();
+        
 
             if(!email || !password){
             toastRef.current.show("Los campos no pueden ir vacios ");
@@ -33,7 +35,7 @@ import Loading from "../../components/Loading";
             } else{
                 await firebase
                 .auth()
-                .signInWithEmailAndPassword(email,password)
+                .signInWithEmailAndPassword(emailSinEspacio,password)
                 .then(()=>{
                     navigation.navigate("MyAccount");
                     console.log("Login Correcto");

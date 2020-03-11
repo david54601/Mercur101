@@ -4,7 +4,8 @@ import AddBusinessScren from "../screens/Business/AddBusiness"
 
 
 export const BusinessScreenStacks= createStackNavigator({
-Businees:{
+   
+    Business:{
     screen:BusinessScreen,
     navigationOptions:()=>({
         title:"Negocios"

@@ -3,55 +3,126 @@ import {StyleSheet,View,ScrollView,Alert,Dimensions} from "react-native"
 import {Icon,Avatar,Image,Input,Button} from "react-native-elements";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
+import MapView from "react-native-maps";
+import Modal from "../Modal";
+import * as Location from "expo-location";
+import uuid from "uuid/v4";
+
+
+import{firebaseApp} from "../../utils/FireBase";
+import firebase from "firebase/app";
+import "firebase/firestore";
+
+const db=firebase.firestore(firebaseApp);
 
 const WidthScreen=Dimensions.get("window").width;
 const WidthMiniature =(WidthScreen/5)-15;
 
 export default function AddBusinessForm(props){
+
     const{toastRef,setIsLoading,navigation}=props;
     const[imagesSelected, setImagesSelected]=useState([]);
     const[businessName ,setBusinessName]=useState("");
-    const[businesstQuantity,setBusinessQuantity]=useState("");
-    const[businessPrice,setBusinessPrice]=useState("");
+    const[businessAddress,setBusinessAddress]=useState("");
+    const[businessPhone,setBusinessPhone]=useState("");
     const[businessDescription,setBusinessDescription]=useState("");
+    const[isVisibleMap, setIsVisibleMap]=useState(false);
+    const[locationBusiness,setLocationBusiness ]=useState(null);
+   
+   
+    const addBusiness =()=>{
 
-   const addBusiness =()=>{
-
-    if(!businessName || !businesstQuantity || !businessPrice || !businessDescription){
-        toastRef.current.show("Todos los campos del formulario son obligatorios");3000
+    if(!businessName || !businessAddress || !businessPhone || !businessDescription){
+        toastRef.current.show("Todos los campos del formulario son obligatorios",3000);
     }else if (imagesSelected.length===0){
-        toastRef.current.show("El negocio tiene que contar por lo menos con una foto");3000  
+        toastRef.current.show("El negocio tiene que contar por lo menos con una foto",3000);
     
     }else{
 
         setIsLoading(true);
-        console-console.log("soy tu papi XD");
-        
+        uploadImageStorage(imagesSelected).then(arrayImages=>{
+          
+          db.collection("business").add({
+            name:businessName,
+            address: businessAddress,
+            description: businessDescription,
+            location:locationBusiness,
+            images:arrayImages,
+            rating:0,
+            ratingTotal:0,
+            quantityVoting:0,
+            createAt:new Date(),
+            creatBy:firebaseApp.auth().currentUser.uid
+          }).then(()=>{
+              setIsLoading(false);
+              navigation.navigate("Business");
+          }).catch((error)=>{
+              setIsLoading(false);
+              toastRef.current.show("Error Al crear Subir el Negocio, por favor intentar más tarde",3000
+              );
+              console.log(error);
+            
+          })
+        })   
     }
-
-    
  }
+
+
+const uploadImageStorage= async imageArray=>{
+    const imageBlob =[];
+    
+    await Promise.all(
+        imageArray.map(async image=>{
+            const response = await fetch (image);
+            const blob = await response.blob();
+            const ref = firebase
+            .storage()
+            .ref("business-images")
+            .child(uuid());
+
+            await ref.put(blob).then(result =>{
+                
+               imageBlob.push(result.metadata.name);
+
+            })
+
+        })
+    )
+        return imageBlob;
+
+}
+
 
 return(
     <ScrollView>
         <ImageBusiness imageBusiness={imagesSelected[0]}/>
         <FormAdd
          setBusinessName={setBusinessName}
-         setBusinessQuantity={setBusinessQuantity}
-         setBusinessPrice={setBusinessPrice}
+         setBusinessAddress={setBusinessAddress}
+         setBusinessPhone={setBusinessPhone}
          setBusinessDescription={setBusinessDescription}
+         setIsVisibleMap={setIsVisibleMap}
+         locationBusiness={locationBusiness}
         />
         <UploadImage
         imagesSelected={imagesSelected}
         setImagesSelected={setImagesSelected}
         toastRef={toastRef} 
         />
+
         <Button
         title="Crear un nuevo Negocio"
         onPress={addBusiness}
         buttonStyle={styles.btnBusiness}
         />
 
+        <Map 
+        isVisibleMap={isVisibleMap}
+        setIsVisibleMap={setIsVisibleMap}
+        setLocationBusiness={setLocationBusiness}
+        toastRef={toastRef}/>
+        
+      
    
     </ScrollView>)
 }
@@ -161,7 +232,7 @@ function UploadImage(props){
 
 
 function FormAdd(props){
-    const{setBusinessName,setBusinessQuantity,setBusinessPrice,setBusinessDescription}=props;
+    const{setBusinessName,setBusinessAddress,setBusinessPhone,setBusinessDescription,setIsVisibleMap,locationBusiness}=props;
 
     return(
         <View style={styles.viewForm}>
@@ -174,23 +245,24 @@ function FormAdd(props){
             />
          
             <Input
-                keyboardType="numeric"
                 placeholder="Ubicación"
                 containerStyle={styles.input}
-                onChange={e=>setBusinessQuantity(e.nativeEvent.text)}
+                onChange={e=>setBusinessAddress(e.nativeEvent.text)}
                 rightIcon={{
+                    
                     type:"material-community",
-                    name:"numeric",
-                    color:"#c2c2c2"
+                    name:"google-maps",
+                    color:locationBusiness  ?"#8F2764": "#c2c2c2",
+                    onPress:()=>setIsVisibleMap(true)
                 }}
                
                 
             />
              <Input
-             keyboardType=""
+                keyboardType="phone-pad"
                 placeholder="Telefono"
                 containerStyle={styles.input}
-                onChange={e=>setBusinessPrice(e.nativeEvent.text)}
+                onChange={e=>setBusinessPhone(e.nativeEvent.text)}
                 rightIcon={{
                     type:"material-community",
                     name:"phone",
@@ -209,9 +281,112 @@ function FormAdd(props){
     )
 }
 
+function Map(props){
+    const{
+        isVisibleMap,
+         setIsVisibleMap,
+         setLocationBusiness,
+         toastRef}=props;
+
+         const [location, setLocation]=useState(null);
+
+         
+        
+
+         useEffect(()=>{
+    (async()=>{
+       const resultPermissions= await Permissions.askAsync(Permissions.LOCATION);
+        const statusPermissions= resultPermissions.permissions.location.status;
+
+        if(statusPermissions !== "granted"){
+            toastRef.current.show(" Debe aceptar los permisos de localización, para poder Buscar un producto ",5000);
+        }else{
+            const loc= await Location.getCurrentPositionAsync({});
+            setLocation({
+                latitude:loc.coords.latitude,
+                longitude:loc.coords.longitude,
+                latitudeDelta:0.001,
+                longitudeDelta:0.001
+
+            })
+        } 
+    })()
+         }, [])
+
+         const confirmLocation=()=>{
+             setLocationBusiness(location);
+             toastRef.current.show("Localización guardada correctamente",3000);
+             setIsVisibleMap(false);
+         }
+
+
+         return(
+             <Modal
+              isVisible={isVisibleMap}
+              setIsVisible={setIsVisibleMap}>
+                  <View>
+                {location && (
+                    <MapView style={styles.mapStyle}
+                        initialRegion={location}
+                        showsUserLocation={true}
+                        onRegionChange={region=>setLocation(region)}
+                    >
+                        <MapView.Marker
+                        coordinate={{
+                            latitude:location.latitude,
+                            longitude:location.longitude
+                        }}                        
+                        draggable
+                        />
+                    </MapView>
+                )}
+        <View style={styles.viewMapBtn}>
+            <Button
+           title="Guardar ubicación" 
+           onPress={confirmLocation}
+           containerStyle={styles.viewMapContainerSave}
+           buttonStyle={styles.viewMapBtnSave}
+            />
+             <Button
+           title="Cancelar ubicación" 
+           onPress={()=>setIsVisibleMap(false)}
+           containerStyle={styles.viewMapContainerCancel}
+           buttonStyle={styles.viewMapBtnCancel}
+           
+            />
+
+        </View>
+     </View>
+   </Modal>
+         )
+
+}
 
 const styles=StyleSheet.create({
+    
+    viewMapBtnCancel:{
+    backgroundColor:"#0F8BFF"
+    },
+    viewMapContainerCancel:{
+        paddingLeft:5,
+        
+    },
+    viewMapBtnSave:{
+        backgroundColor:"#8F2764"
+    },
+    viewMapContainerSave:{
+        paddingRight:5,
 
+    },
+    viewMapBtn:{
+      flexDirection:"row",
+      justifyContent:"center",
+      marginTop:10
+    },
+    mapStyle:{
+        width:"100%",
+        height:550
+    },
     btnBusiness:{
         backgroundColor:"#8F2764",
         margin:20

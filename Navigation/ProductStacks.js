@@ -7,7 +7,7 @@ const ProductsScreenStacks =createStackNavigator({
     Products:{
         screen:ProductScreen,
         navigationOptions:()=>({
-            title: "productos"
+            title: "Productos"
         })
     },
     AddProduct:{

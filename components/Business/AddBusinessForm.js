@@ -20,7 +20,7 @@ const WidthMiniature =(WidthScreen/5)-15;
 
 export default function AddBusinessForm(props){
 
-    const{toastRef,setIsLoading,navigation}=props;
+    const{toastRef,setIsLoading,navigation,setIsReloadBusiness}=props;
     const[imagesSelected, setImagesSelected]=useState([]);
     const[businessName ,setBusinessName]=useState("");
     const[businessAddress,setBusinessAddress]=useState("");
@@ -29,24 +29,31 @@ export default function AddBusinessForm(props){
     const[isVisibleMap, setIsVisibleMap]=useState(false);
     const[locationBusiness,setLocationBusiness ]=useState(null);
    
-   
+
     const addBusiness =()=>{
 
-    if(!businessName || !businessAddress || !businessPhone || !businessDescription){
+    if(!businessName || !businessAddress || !businessPhone ){
         toastRef.current.show("Todos los campos del formulario son obligatorios",3000);
-    }else if (imagesSelected.length===0){
-        toastRef.current.show("El negocio tiene que contar por lo menos con una foto",3000);
+    } //else if(businessPhone<7 || businessPhone>14){
+       // toastRef.current.show("Los datos ingresados en el campo telefono no son correctos. ",3000);
+
+  //  }
     
-    }else{
+    //else if (imagesSelected.length===0){
+       // toastRef.current.show("El negocio tiene que contar por lo menos con una foto",3000);
+    //}
+    else{
 
         setIsLoading(true);
         uploadImageStorage(imagesSelected).then(arrayImages=>{
           
-          db.collection("business").add({
+          db.collection("business")
+          .add({
             name:businessName,
             address: businessAddress,
             description: businessDescription,
             location:locationBusiness,
+            phone:businessPhone,
             images:arrayImages,
             rating:0,
             ratingTotal:0,
@@ -55,12 +62,13 @@ export default function AddBusinessForm(props){
             creatBy:firebaseApp.auth().currentUser.uid
           }).then(()=>{
               setIsLoading(false);
+              setIsReloadBusiness(true);
               navigation.navigate("Business");
-          }).catch((error)=>{
+          }).catch(error=>{
               setIsLoading(false);
-              toastRef.current.show("Error Al crear Subir el Negocio, por favor intentar más tarde",3000
+              toastRef.current.show("Error Al crear el Negocio, por favor intentar más tarde",3000
               );
-              console.log(error);
+              
             
           })
         })   

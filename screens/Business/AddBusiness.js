@@ -6,16 +6,19 @@ import AddBusinessForm from "../../components/Business/AddBusinessForm";
 
 export default function AddBusiness(props) {
     const {navigation}=props;
+    const {setIsReloadBusiness}=navigation.state.params;
     const toastRef =useRef();
-const[isLoading, setIsLoading ]=useState(false);
+    const[isLoading, setIsLoading ]=useState(false);
 
+    console.log("recibio en el AddBusiness los props son: "+props);
 
     return(
         <View>
             <AddBusinessForm 
-            navigation={navigation}
             toastRef={toastRef}
             setIsLoading={setIsLoading}
+            navigation={navigation}
+            setIsReloadBusiness={setIsReloadBusiness}
             />
             <Toast ref={toastRef} position="center" opacity={0.5}/>
             <Loading isVisible={isLoading} text="creando Negocio"/>

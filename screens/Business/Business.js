@@ -16,7 +16,9 @@ export default function Business(props) {
   const [startBusiness, setStartBusiness]=useState(null);
   const [isLoading , setIsLoading]=useState(false);
   const [totalBusiness, setTotalBusiness]=useState(0);
+  const [isReloadBusiness,setIsReloadBusiness]=useState(false);
   const limiteBusiness=7;
+  
 
   useEffect(()=>{
     firebase.auth().onAuthStateChanged(userInfo=>{
@@ -24,19 +26,15 @@ export default function Business(props) {
     })
   },[]);
 
-  
-
-
   useEffect(()=>{
     db.collection("business")
     .get().then(snap=>{
       setTotalBusiness(snap.size);
+            
     })
 
-
-      const getDatos= (async () =>{
+      let getDatos = (async () =>{
         const resultBusiness=[];
-
         const business=db
         .collection("business")
         .orderBy("createAt", "desc")
@@ -48,31 +46,41 @@ export default function Business(props) {
           response.forEach(doc =>{
             let business=doc.data();
             business.id=doc.id;
-            resultBusiness.push({business})
+            resultBusiness.push({business});
           })
           setBusiness(resultBusiness);
         })
       })()
-    },[]);
+      setIsReloadBusiness(false);
+    },[isReloadBusiness]);
+
 
     return(
     <View style={styles.viewBody}>
       <ListBusiness
-      business={business}      
+      business={business} 
+      isLoading={isLoading}  
+         
       />
-      {user&&<AddProductButton  navigation={navigation}/> }
-        
+      {user&& (
+      <AddBusinessButton 
+       navigation={navigation}
+       setIsReloadBusiness={setIsReloadBusiness}
+       />
+      )} 
     </View>
         )
 }
 
-function AddProductButton(props){
-  const{navigation} =props;
+function AddBusinessButton(props){
+  const{navigation,setIsReloadBusiness} =props;
   
   return(
     <ActionButton
     buttonColor="#8f2764"
-    onPress={() => navigation.navigate("AddBusiness")}
+    onPress={() => 
+      navigation.navigate("AddBusiness",{setIsReloadBusiness})
+    }
     />
    
   )

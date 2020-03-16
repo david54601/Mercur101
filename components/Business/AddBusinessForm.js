@@ -32,7 +32,7 @@ export default function AddBusinessForm(props){
 
     const addBusiness =()=>{
 
-    if(!businessName || !businessAddress || !businessPhone ){
+    if(!businessName || !businessAddress || !businessPhone||!businessDescription||!businessPhone ){
         toastRef.current.show("Todos los campos del formulario son obligatorios",3000);
     } //else if(businessPhone<7 || businessPhone>14){
        // toastRef.current.show("Los datos ingresados en el campo telefono no son correctos. ",3000);
@@ -66,8 +66,7 @@ export default function AddBusinessForm(props){
               navigation.navigate("Business");
           }).catch(error=>{
               setIsLoading(false);
-              toastRef.current.show("Error Al crear el Negocio, por favor intentar más tarde",3000
-              );
+              toastRef.current.show("Error Al crear el Negocio, por favor intentar más tarde",3000);
               
             
           })

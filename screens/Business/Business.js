@@ -17,7 +17,7 @@ export default function Business(props) {
   const [isLoading , setIsLoading]=useState(false);
   const [totalBusiness, setTotalBusiness]=useState(0);
   const [isReloadBusiness,setIsReloadBusiness]=useState(false);
-  const limiteBusiness=7;
+  const limiteBusiness=12;
   
 
   useEffect(()=>{
@@ -33,7 +33,7 @@ export default function Business(props) {
             
     })
 
-      let getDatos = (async () =>{
+      const getDatos = (async () =>{
         const resultBusiness=[];
         const business=db
         .collection("business")
@@ -55,17 +55,48 @@ export default function Business(props) {
     },[isReloadBusiness]);
 
 
+    handleLoadMore = async()=>{
+
+      const resultBusiness=[];
+      business.length < totalBusiness&& setIsLoading (true);
+      
+
+      const businessDb =db.collection("business")
+      .orderBy("createAt", "desc")
+      .startAfter(startBusiness.data().createAt)
+      .limit(limiteBusiness);
+
+      await businessDb.get().then(response=>{
+        if(response.docs.length>0){
+          setStartBusiness(response.docs[response.docs.length-1]);
+        }else{
+          setIsLoading(false);
+        }
+
+        response.forEach(doc=>{
+          let business=doc.data();
+          Business.id=doc.id;
+          resultBusiness.push({business});
+        })
+          setBusiness([...business,...resultBusiness]);
+
+      })
+
+    }
+
+
     return(
     <View style={styles.viewBody}>
       <ListBusiness
       business={business} 
       isLoading={isLoading}  
-         
+      handleLoadMore={handleLoadMore} 
+      navigation={navigation}
       />
       {user&& (
       <AddBusinessButton 
+      setIsReloadBusiness={setIsReloadBusiness}
        navigation={navigation}
-       setIsReloadBusiness={setIsReloadBusiness}
        />
       )} 
     </View>
@@ -79,8 +110,7 @@ function AddBusinessButton(props){
     <ActionButton
     buttonColor="#8f2764"
     onPress={() => 
-      navigation.navigate("AddBusiness",{setIsReloadBusiness})
-    }
+      navigation.navigate("AddBusiness",{setIsReloadBusiness})}
     />
    
   )

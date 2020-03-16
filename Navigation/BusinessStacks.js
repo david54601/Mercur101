@@ -1,6 +1,7 @@
  import {createStackNavigator} from "react-navigation-stack";
 import BusinessScreen from "../screens/Business";
-import AddBusinessScren from "../screens/Business/AddBusiness"
+import AddBusinessScreen from "../screens/Business/AddBusiness"
+import BusineScreen from "../screens/Business/Busine"
 
 
 export const BusinessScreenStacks= createStackNavigator({
@@ -13,12 +14,18 @@ export const BusinessScreenStacks= createStackNavigator({
     
     },
     AddBusiness:{
-        screen:AddBusinessScren,
+        screen:AddBusinessScreen,
         navigationOptions:()=>({
             title: "Nuevo Negocio"
         })
+    },
+    Busine:{
+        screen:BusineScreen,
+        navigationOptions:props =>({
+            title: props.navigation.state.params.business.item.business.name
+                  
+        })
     }
-
 })
 
 export default BusinessScreenStacks;

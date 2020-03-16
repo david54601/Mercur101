@@ -1,23 +1,30 @@
 import React, {useState, useEffect} from "react";
-import {StyleSheet,View,Text,FlatList,ActivityIndicator,TouchableOpacity}from "react-native";
+import {StyleSheet,View,Text,FlatList
+    ,ActivityIndicator,TouchableOpacity}from "react-native";
 import {Image} from "react-native-elements";
 import * as firebase from "firebase";
 
 export default function ListBusiness(props){
-    const {business,isLoading}=props;
+    const {business,isLoading,handleLoadMore,navigation}=props;
         return(
         <View>
             {business?(
                 <FlatList
                 data={business}
-                renderItem={business=> <Business business={business}/>}
+                renderItem={business=> <Business 
+                    business={business}
+                    navigation={navigation}
+                    />}
                 keyExtractor={(item,index)=>index.toString()}
-               // onEndReached={}
-                onEndReachedThreshold={0}
-               ListFooterComponent={<FooterList isLoading={isLoading}/>}
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.5}
+               ListFooterComponent={<FooterList 
+                isLoading={isLoading}
+                business={business}
+               />}
                 />
             ):(
-                <View style={styles.loadingBusiness}>
+                <View style={styles.loaderBusiness}>
                     <ActivityIndicator size="large"/>
                     <Text>Cargando Negocios</Text>
 
@@ -28,11 +35,10 @@ export default function ListBusiness(props){
 }
 
 function Business(props){
-    const {business}=props;
+    const {business,navigation}=props;
     const{name,address,phone,description,images}= business.item.business;
     const[imageBusiness, setImageBusiness]=useState(null);
 
-    
 
     useEffect(()=>{
         const image=images[0];
@@ -45,15 +51,12 @@ function Business(props){
     })
 
     return(
-        <TouchableOpacity onPress={()=>console.log("ir al Negocio.")}>
+        <TouchableOpacity onPress={()=>navigation.navigate("Busine", {business})}>
             <View style={styles.viewBusiness}>
-            <View styles={styles.viewBusinessImage}>
+            <View styles={styles.viewBusinessImage}> 
             <Image
             resizeMode="cover"
-            source={{uri:imageBusiness
-              //  ?imageBusiness
-               // :require"../../assets/img/no-photo.png"
-            }}
+            source={{uri:imageBusiness}}
             style={styles.imageBusiness}  
             PlaceholderContent={<ActivityIndicator color="fff"/>}          
             />
@@ -73,7 +76,10 @@ function Business(props){
 }
 
 function FooterList(props){
-    const {isLoading}=props;
+    const {isLoading, business}=props;
+
+    console.log("llega en el footerList los siguientes props" +business );
+    
         
     if(isLoading){
         return(
@@ -81,13 +87,31 @@ function FooterList(props){
                 <ActivityIndicator size="large"/>
             </View>
         )
-    }else{
-        return(
-            <View style={styles.notFoundBusiness}>
-            <Text> No quedan mas negocios por mostrar </Text>
-         </View>
+    }else if (!business) {
 
+        <View style={styles.notFoundBusiness}>
+        <ActivityIndicator size="large"/>
+        <Text> Aun no tiene ningun Negocio para ver, deber crear uno. </Text>
+        </View>
+
+    } else {
+        return(
+         <View style={styles.notFoundBusiness}>
+                <ActivityIndicator size="large"/>
+                <Text> No quedan mas negocios por mostrar </Text>
+        </View>
+
+
+
+            
         )
+
+    //    return(
+     //       <View style={styles.notFoundBusiness}>
+      //      <Text> No quedan mas negocios por mostrar </Text>
+      //   </View>
+
+      //  )
        
     }
 
@@ -116,7 +140,7 @@ const styles =StyleSheet.create({
     },
 
     loadingBusiness:{
-        margin:20,
+        marginTop:20,
         alignItems:"center"
     },
     viewBusiness:{

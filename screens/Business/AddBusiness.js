@@ -10,8 +10,6 @@ export default function AddBusiness(props) {
     const toastRef =useRef();
     const[isLoading, setIsLoading ]=useState(false);
 
-    console.log("recibio en el AddBusiness los props son: "+props);
-
     return(
         <View>
             <AddBusinessForm 

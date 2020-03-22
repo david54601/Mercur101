@@ -1,144 +1,144 @@
-import React, {useState,useEffect} from "react";
-import {View,ScrollView,Text,Dimensions,StyleSheet} from "react-native";
+import React,{useState, useEffect,useRef} from "react";
+import {View,Text, Dimensions,StyleSheet,ScrollView} from "react-native";
+import {Rating,ListItem} from "react-native-elements"
 import Carousel from "../../components/Carousel";
+import ListReviews from "../../components/Business/ListReviews";
 import Map from "../../components/Map";
-import ActionButton from "react-native-action-button";
-import {Rating, ListItem}from "react-native-elements";
 import *as firebase from "firebase";
+import ActionButton from "react-native-action-button";
 
-
-const screenWidth= Dimensions.get("window").width;
+const screenWidth=Dimensions.get("window").width;
 
 export default function Busine(props){
 
     const{navigation}=props;
     const {business}=navigation.state.params.business.item;
-    const [imageBusiness,setImageBusiness]=useState([]);
+    const [imagesBusiness, setImagesBusiness] = useState([]);
+    const [rating, setRating] = useState(business.rating);
+    const [isFollow, setIsFollow] = useState(false);
+    const [userLogged, setUserLogged] = useState(false);
+    const toastRef = useRef();
     
-    useEffect(()=>{
+  
 
-        const arrayUrl=[];
-
-        (async()=>{
-
-           await Promise.all(
-               business.images.map(async idImage=>{
-                   await firebase.storage()
-                   .ref(`business-images/${idImage}`)
-                   .getDownloadURL()
-                   .then(imageUrl=>{
-                       console.log(imageUrl);
-                       arrayUrl.push(imageUrl)
-                   });
-               })
-           ) 
-               setImageBusiness(arrayUrl);
-        })()
-
-    },[])
+    useEffect(() => {
+        const arrayUrls = [];
+        (async () => {
+          await Promise.all(
+            business.images.map(async idImage => {
+              await firebase
+                .storage()
+                .ref(`business-images/${idImage}`)
+                .getDownloadURL()
+                .then(imageUrl => {
+                  arrayUrls.push(imageUrl);
+                });
+            })
+          );
+          setImagesBusiness(arrayUrls);
+        })();
+      }, []);
 
 
     return(
         <ScrollView style={styles.viewBody}>
-            <Carousel
-            arrayImages={imageBusiness}
+           <Carousel
+            arrayImages={imagesBusiness}
             width={screenWidth}
             height={200}
-            />
-            <Titlebusiness
-            name={business.name}
-            description={business.description}
-            phone={business.phone}
-            rating={business.rating}
-            />
-            <BusinessInfo 
-            location={business.location}
-            name={business.name}
-            address={business.address}
-            phone={business.phone}
+           />
+           <TitleBusiness
+           name={business.name}
+           description={business.description}
+            rating={rating}
+           
+           />
+          <BusineInfo
+          location={business.location}
+          name={business.name}
+          phone={business.phone}
+          address={business.address}
+          
+          />
 
-            />
+        <ListReviews
+        navigation={navigation}
+        idBusiness={business.id}
+        setRating={setRating}
+        
+      />
 
-        <AddProductButton  
-        style={styles.styleButton}
-        navigation={navigation}/>
+            <AddProductButton navigation={navigation}
+            style={styles.btnAddProduct}/>
         </ScrollView>
+       
     )
 }
 
-function Titlebusiness(props){
-    const{name,description,rating}=props;
 
+function TitleBusiness(props){
+    const {name, description,rating}=props;
     return(
         <View style={styles.viewBusinessTitle}>
-        <View style={{flexDirection:"row"}}>
-        <Text style={styles.nameBusiness}>{name} </Text>
-        <Rating
+            <View style={{flexDirection:'row'}}>
+            <Text style={styles.nameBusiness}>{name} </Text>
+            <Rating
             style={styles.rating}
-            imageSize={20}
-            readonly
-            startingValue={parseFloat(rating)}
-        />
-
+              imageSize={20}
+              readonly
+              startingValue={parseFloat(rating)}
+            />
+            </View>
+            <Text style={styles.descriptionBusiness}>{description}</Text>
         </View>
-    <Text style={styles.descriptionBusiness}>{description}</Text>
 
-    </View>
     )
-
 }
 
+function BusineInfo (props){
+  const {location, name, address, phone}=props;
 
-
-    function BusinessInfo(props){
-
-        const{location,name,address,phone}=props;
-
-    const listInfo=[
+  const listInfo = [
     {
-        text:address,
-        iconName:"map-marker",
-        iconType:"material-community",
-        action:null
-
+      text: address,
+      iconName: "map-marker",
+      iconType: "material-community",
+      action: null
     },
     {
-        text:phone,
-        iconName:"phone",
-        iconType:"material-community",
-        action:null
-
-
+      text: phone,
+      iconName: "phone",
+      iconType: "material-community",
+      action: null
     }
-    ]
-
-        return(
-            <View style={styles.viewBusinessStyle}>
-                <Text style={styles.businessInfoTitle}>
-                    Información Sobre el negocio</Text>
-                    <Map
-                    location={location}
-                    name={name}
-                    height={100}/>
-                   {listInfo.map((item,index)=>(
-                       <ListItem
-                       key={index}
-                       title={item.text}
-                       leftIcon={{
-                        name:item.iconName,
-                        type:item.iconType,
-                        color:"#8F2764"
-                       }}
-                       containerStyle={styles.contailerListItem}
-
-                       />
-                   ))}
-                    
-            </View>
-        )
+  
+  ];
 
 
-    }
+return(
+  <View style={styles.viewBusinessInfo}>
+    <Text style={styles.businessInfoTitle}> Información sobre el negocio</Text>
+    <Map
+  location={location}
+  name={name}
+  height={100}/>
+     {listInfo.map((item, index) => (
+        <ListItem
+          key={index}
+          title={item.text}
+          leftIcon={{
+            name: item.iconName,
+            type: item.iconType,
+            color: "#8f2764"
+          }}
+          containerStyle={styles.containerListItem}
+        />
+      ))}
+      
+  </View>
+ 
+)}
+
 
 
 function AddProductButton(props){
@@ -154,46 +154,52 @@ function AddProductButton(props){
   
   }
 
-
-
 const styles=StyleSheet.create({
+
+  btnAddProduct:{
+    flex:1,
+    justifyContent:"flex-end"
+  },
+
+  containerListItem:{
+    borderBottomColor:"#d8d8d8",
+    borderBottomWidth:1
+
+  },
+
+  businessInfoTitle:{
+    fontSize:20,
+    fontWeight:"bold",
+    marginBottom:10
+
+  },
+  
+  viewBusinessInfo:{
+    margin:15,
+    marginTop:25
+  },
+
+
+  descriptionBusiness:{
+    marginTop:5,
+    color:"grey"
+
+  },
+
+    rating:{
+        position:"absolute",
+        right:0
+    },
 
     viewBody:{
     flex:1
     },
-    nameBusiness:{
-    fontSize:20,
-    fontWeight:"bold",
-
-    },
     viewBusinessTitle:{
-     margin:15  
+        margin:15
     },
-    rating:{
-       position:"absolute",
-       right:0,
-       
-    },
-    descriptionBusiness:{
-        marginTop:5,
-        color:"grey"
-    },
-    viewBusinessStyle:{
-        margin:15,
-        marginTop:25
-    },
-    businessInfoTitle:{
+    nameBusiness:{
         fontSize:20,
-        fontWeight:"bold",
-        marginBottom:10
+        fontWeight:"bold"
     },
-    contailerListItem:{
-        borderBottomColor:"#d8d8d8",
-        borderBottomWidth:1
-    },
-
-    
-     
-
 
 })

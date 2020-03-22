@@ -77,9 +77,7 @@ function Business(props){
 
 function FooterList(props){
     const {isLoading, business}=props;
-
-    console.log("llega en el footerList los siguientes props" +business );
-    
+   
         
     if(isLoading){
         return(
@@ -87,31 +85,21 @@ function FooterList(props){
                 <ActivityIndicator size="large"/>
             </View>
         )
-    }else if (!business) {
-
-        <View style={styles.notFoundBusiness}>
-        <ActivityIndicator size="large"/>
-        <Text> Aun no tiene ningun Negocio para ver, deber crear uno. </Text>
-        </View>
-
     } else {
         return(
+            
          <View style={styles.notFoundBusiness}>
-                <ActivityIndicator size="large"/>
                 <Text> No quedan mas negocios por mostrar </Text>
         </View>
-
-
-
-            
+ 
         )
 
-    //    return(
+     //  return(
      //       <View style={styles.notFoundBusiness}>
-      //      <Text> No quedan mas negocios por mostrar </Text>
-      //   </View>
+     //       <Text> No quedan mas negocios por mostrar </Text>
+     //    </View>
 
-      //  )
+     //  )
        
     }
 

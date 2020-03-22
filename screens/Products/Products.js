@@ -17,13 +17,12 @@ export default function Products(props) {
     <View style={styles.viewBody}>
       <Text>estamos en productos</Text>
 
-      
+      {user&&<AddProductButton  navigation={navigation}/> }
         
     </View>
         )
 }
-//esta linea de abajo va dentro del return en el view
-//{user&&<AddProductButton  navigation={navigation}/> }
+
 function AddProductButton(props){
   const{navigation} =props;
   

@@ -68,6 +68,7 @@ export default function Business(props) {
 
       await businessDb.get().then(response=>{
         if(response.docs.length>0){
+         
           setStartBusiness(response.docs[response.docs.length-1]);
         }else{
           setIsLoading(false);

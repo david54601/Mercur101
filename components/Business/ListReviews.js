@@ -11,6 +11,11 @@ export default function ListReviews(props){
 const {navigation,idBusiness,setRating}=props;
 const [reviews,setReviews]=useState([]);
 const [reviewsReload,setReviewsReload]=useState(false);
+const [userLogged, setUserLogged]=useState(false);
+
+firebase.auth().onAuthStateChanged(user=>{
+user? setUserLogged(true):setUserLogged(false);
+})
     
 
     useEffect(()=>{
@@ -47,22 +52,42 @@ const [reviewsReload,setReviewsReload]=useState(false);
 
     return(
         <View>
-            <Button
-            buttonStyle={styles.btnAddReview}
-            titleStyle={styles.btnTitleAddReview}
-            title="Escribe una opinion"
-            icon={{
-                type:"material-community",
-                name:"square-edit-outline",
-                color:"#8f2764"
-                
-            }}
-            onPress={()=>navigation.navigate("AddReviewBusiness", {
-                idBusiness:idBusiness,
-                setReviewsReload:setReviewsReload
-                
-            })}
-            />
+
+            {userLogged ? (
+
+
+      <Button
+     buttonStyle={styles.btnAddReview}
+     titleStyle={styles.btnTitleAddReview}
+     title="Escribe una opinión"
+     icon={{
+     type:"material-community",
+     name:"square-edit-outline",
+     color:"#8f2764"
+    
+    }}
+   onPress={()=>navigation.navigate("AddReviewBusiness", {
+     idBusiness:idBusiness,
+     setReviewsReload:setReviewsReload
+    
+     })}
+/>
+
+           ) :(
+            <View style={{flex:1}}>
+            <Text style={{textAlign:"center", padding:20, color:"#8f2764"}}
+            onPress={()=>navigation.navigate("Login")}
+            >
+                 Para Escribir una opinión es necesario estar logeado {" "} 
+                 <Text style={{fontWeight:"bold"}}> Pulsa AQUÍ para iniciar sesión </Text>
+             </Text>
+
+
+            </View>
+
+           )}
+
+      
             <FlatList
                data={reviews} 
                renderItem={review=><Review review={review}/>}

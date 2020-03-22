@@ -1,6 +1,6 @@
 import React,{useState, useEffect,useRef} from "react";
 import {View,Text, Dimensions,StyleSheet,ScrollView} from "react-native";
-import {Rating,ListItem} from "react-native-elements"
+import {Rating,ListItem,Icon} from "react-native-elements"
 import Carousel from "../../components/Carousel";
 import ListReviews from "../../components/Business/ListReviews";
 import Map from "../../components/Map";
@@ -40,8 +40,31 @@ export default function Busine(props){
       }, []);
 
 
+      const addFollow=()=>{
+        console.log("negocio seguido");
+        setIsFollow(true);
+        
+      }
+
+      const removeFollow=()=>{
+        console.log("dejaste  de seguir un negocio");
+        setIsFollow(false);
+      }
+
     return(
         <ScrollView style={styles.viewBody}>
+              <View style={styles.viewFollow}>
+                <Icon
+                type="material-community"
+                name={isFollow?"account-plus":"account-plus-outline"}
+                onPress={isFollow ? removeFollow : addFollow}
+              color={isFollow ? "#8f2764":"#000"}
+                size={35}
+                underlayColor="transparent"
+                />
+                
+              </View>
+
            <Carousel
             arrayImages={imagesBusiness}
             width={screenWidth}
@@ -60,6 +83,8 @@ export default function Busine(props){
           address={business.address}
           
           />
+           <AddProductButton navigation={navigation}
+            style={styles.btnAddProduct}/>
 
         <ListReviews
         navigation={navigation}
@@ -68,8 +93,7 @@ export default function Busine(props){
         
       />
 
-            <AddProductButton navigation={navigation}
-            style={styles.btnAddProduct}/>
+           
         </ScrollView>
        
     )
@@ -184,6 +208,19 @@ const styles=StyleSheet.create({
     marginTop:5,
     color:"grey"
 
+  },
+  
+  viewFollow: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 2,
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 100,
+    paddingTop: 5,
+    paddingBottom: 5,
+    paddingLeft: 15,
+    paddingRight: 5
   },
 
     rating:{

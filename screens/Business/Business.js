@@ -18,6 +18,11 @@ export default function Business(props) {
   const [totalBusiness, setTotalBusiness]=useState(0);
   const [isReloadBusiness,setIsReloadBusiness]=useState(false);
   const limiteBusiness=12;
+  const [userLogged, setUserLogged]=useState(false);
+
+firebase.auth().onAuthStateChanged(user=>{
+user? setUserLogged(true):setUserLogged(false);
+})
   
 
   useEffect(()=>{
@@ -86,8 +91,12 @@ export default function Business(props) {
     }
 
 
+
     return(
     <View style={styles.viewBody}>
+
+
+      
       <ListBusiness
       business={business} 
       isLoading={isLoading}  

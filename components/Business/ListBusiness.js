@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {StyleSheet,View,Text,FlatList
-    ,ActivityIndicator,TouchableOpacity}from "react-native";
+import {StyleSheet,View,Text,FlatList,ActivityIndicator,TouchableOpacity}from "react-native";
 import {Image} from "react-native-elements";
 import * as firebase from "firebase";
 
